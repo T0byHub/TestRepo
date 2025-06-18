@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calliope Mini Verbindung</title>
+</head>
+<body>
+  <h1>Calliope Mini Verbindungstest</h1>
+  <button id="connect">Calliope Mini verbinden</button>
+  <p id="status">Status: Nicht verbunden</p>
+
+  <script>
+    const button = document.getElementById('connect');
+    const status = document.getElementById('status');
+
+    button.addEventListener('click', async () => {
+      try {
+        const device = await navigator.usb.requestDevice({
+          filters: [{ vendorId: 0x0D28 }] // NXP/Mbed Vendor-ID, passt für Calliope Mini
+        });
+
+        if (device) {
+          await device.open();
+          status.textContent = `Status: Verbunden mit ${device.productName}`;
+        }
+      } catch (error) {
+        status.textContent = "Status: Verbindung fehlgeschlagen oder abgebrochen";
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
