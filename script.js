@@ -1,19 +1,14 @@
 async function startCamera() {
-  const constraints = {
-    video: {
-      facingMode: { exact: "environment" }
-    },
-    audio: false
-  };
+  const video = document.getElementById("video");
 
   try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const video = document.getElementById("video");
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: "environment" } },
+      audio: false
+    });
     video.srcObject = stream;
   } catch (err) {
-    console.error("Kamera konnte nicht gestartet werden:", err);
-    alert("Zugriff auf die Kamera wurde verweigert oder ist nicht verfügbar.");
+    console.error("Kamera-Zugriff fehlgeschlagen:", err);
+    alert("Zugriff verweigert oder nicht verfügbar.");
   }
 }
-
-startCamera();
