@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calliope Serial Viewer</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    #output { white-space: pre-wrap; background: #eee; padding: 1em; border-radius: 10px; max-height: 60vh; overflow-y: auto; }
+    button { font-size: 1.2em; padding: 0.5em 1em; }
+  </style>
+</head>
+<body>
+  <h1>Calliope Mini Serial Viewer</h1>
+  <button id="connect">🔌 Verbinden</button>
+  <div id="output">(Noch keine Daten)</div>
+
+  <script>
+    const connectButton = document.getElementById('connect');
+    const output = document.getElementById('output');
+
+    connectButton.addEventListener('click', async () => {
+      try {
+        const port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
+
+        const decoder = new TextDecoderStream();
+        port.readable.pipeTo(decoder.writable);
+        const reader = decoder.readable.getReader();
+
+        output.textContent = "Verbunden! Warte auf Daten...\n";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          output.textContent += value;
+          output.scrollTop = output.scrollHeight;
+        }
+      } catch (err) {
+        output.textContent = "Fehler: " + err + "\n";
+      }
+    });
+  </script>
+</body>
+</html>
